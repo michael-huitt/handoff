@@ -23,7 +23,7 @@ def get_conf(filepath: str) -> dict:
         
         if conf_dict.get("flags"):
             conf_dict["flags"] = conf_dict["flags"].split(" ") #when we use run() in auto_scp(), we split the "flags"
-                                                               #object so that we can unpack the list, as run() expects
+                                                               #item so that we can unpack the list, as run() expects
         return conf_dict                                       #str for its arguments
 
     except FileNotFoundError:
@@ -37,10 +37,11 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
                     capture_output = True, text = True)
         
         if Result.returncode != 0:
-            raise Exception(f"scp exited with code ({Result.returncode}: {Result.stderr.strip()}")
+            raise Exception(f"scp exited with code ({Result.returncode}): {Result.stderr.strip()}")
 
         else:
-            return Result.stdout
+            return (f"Transfer succesful {client_path} -> {SSH_Conn.user}@{SSH_Conn.hostname}:{host_path}"
+                    f"\n{Result.stderr}")
 
     except Exception as e:
         print(f"auto_scp error: {e}")
