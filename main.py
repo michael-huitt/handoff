@@ -20,17 +20,20 @@ def get_conf(filepath: str) -> dict:
             for line in file:
                 split_line = line.split('=', 1)
                 conf_dict[split_line[0].strip()] = split_line[1].strip()
-    
-        return conf_dict
+        
+        if conf_dict.get("flags"):
+            conf_dict["flags"] = conf_dict["flags"].split(" ") #when we use run() in auto_scp(), we split the "flags"
+                                                               #object so that we can unpack the list, as run() expects
+        return conf_dict                                       #str for its arguments
 
     except FileNotFoundError:
         print("The config file does not exist")
 
-def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: str) -> str:
+def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> str:
     try:
         #combine the user@hostname and path into one argument for run() 
         destination_arg = SSH_Conn.user + "@" + SSH_Conn.hostname + ":" + host_path 
-        Result = run(['scp','-P', SSH_Conn.port, client_path, destination_arg],
+        Result = run(['scp','-P', SSH_Conn.port, *flags, client_path, destination_arg],
                     capture_output = True, text = True)
         
         if Result.returncode != 0:
