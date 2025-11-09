@@ -32,7 +32,12 @@ def get_conf(filepath: str) -> dict:
 def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> str:
     try:
         #combine the user@hostname and path into one argument for run() 
-        destination_arg = SSH_Conn.user + "@" + SSH_Conn.hostname + ":" + host_path 
+        if SSH_Conn.user: 
+            destination_arg = SSH_Conn.user + "@" + SSH_Conn.hostname + ":" + host_path 
+        
+        else:
+            destination_arg = SSH_Conn.hostname + ":" + host_path #so that scp defaults to the current session's user 
+
         Result = run(['scp','-P', SSH_Conn.port, *flags, client_path, destination_arg],
                     capture_output = True, text = True)
         
