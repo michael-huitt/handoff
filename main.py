@@ -4,7 +4,8 @@ from sys import argv
 CONF_PATH = "settings.conf"
 
 class Conn:
-    def __init__(self, hostname, port):
+    def __init__(self, user, hostname, port):
+        self.user = user 
         self.hostname = hostname
         self.port = port
 
@@ -27,8 +28,8 @@ def get_conf(filepath: str) -> dict:
 
 def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: str) -> str:
     try:
-        #combine the hostname and path into one argument for run() 
-        destination_arg = SSH_Conn.hostname + ":" + host_path 
+        #combine the user@hostname and path into one argument for run() 
+        destination_arg = SSH_Conn.user + "@" + SSH_Conn.hostname + ":" + host_path 
         Result = run(['scp','-P', SSH_Conn.port, client_path, destination_arg],
                     capture_output = True, text = True)
         
@@ -39,7 +40,7 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: str) -> st
             return Result.stdout
 
     except Exception as e:
-        print(f"auto_scp error: {e.strip()}")
+        print(f"auto_scp error: {e}")
 
 def main():
     try: 
@@ -47,13 +48,13 @@ def main():
             raise ValueError("Usage: main.py <client path> <host path>")
         
         conf = get_conf(CONF_PATH)
-        SSH_Conn = Conn(conf.get("hostname"), conf.get("port"))  
+        SSH_Conn = Conn(conf.get("user"), conf.get("hostname"), conf.get("port"))  
         client_path = argv[1]
         host_path = argv[2]
 
         output = auto_scp(client_path, host_path, SSH_Conn, conf.get("flags"))
         
-        print(output.strip())
+        print(output)
     
     except Exception as e:
         print("error: ", repr(e))
