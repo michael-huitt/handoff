@@ -15,13 +15,19 @@ def get_conf(filepath: str) -> dict:
         return conf_dict
 
     except FileNotFoundError:
-        print("Error: The config file does not exist")
+        print("The config file does not exist")
 
-def auto_scp(path: str):
+def auto_scp(client_path: str, host_path: str, hostname: str, port: str):
     pass
 
 def main():
-    conf_dict = get_conf(CONF_PATH)
+    try: 
+        conf_dict = get_conf(CONF_PATH)
+        if len(argv) < 3:
+            raise ValueError("Usage: main.py <client path> <host path>")
+    
+    except Exception as e:
+        print("error: ", repr(e))
 
 if __name__ == "__main__":
     main()
