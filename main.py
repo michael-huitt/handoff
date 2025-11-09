@@ -6,6 +6,7 @@ CONF_PATH = "settings.conf"
 class Conn:
     def __init__(self, hostname, port):
         self.hostname = hostname
+        self.port = port
 
         if port is None:
             self.port = 22
@@ -24,8 +25,21 @@ def get_conf(filepath: str) -> dict:
     except FileNotFoundError:
         print("The config file does not exist")
 
-def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn):
-    pass
+def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: str) -> str:
+    try:
+        #combine the hostname and path into one argument for run() 
+        destination_arg = SSH_Conn.hostname + ":" + host_path 
+        Result = run(['scp','-P', SSH_Conn.port, client_path, destination_arg],
+                    capture_output = True, text = True)
+        
+        if Result.returncode != 0:
+            raise Exception(f"scp exited with code ({Result.returncode}: {Result.stderr.strip()}")
+
+        else:
+            return Result.stdout
+
+    except Exception as e:
+        print(f"auto_scp error: {e.strip()}")
 
 def main():
     try: 
@@ -37,6 +51,10 @@ def main():
         client_path = argv[1]
         host_path = argv[2]
 
+        output = auto_scp(client_path, host_path, SSH_Conn, conf.get("flags"))
+        
+        print(output.strip())
+    
     except Exception as e:
         print("error: ", repr(e))
 
