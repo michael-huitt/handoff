@@ -63,8 +63,43 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
     except Exception as e:
         print(f"auto_scp error: {e}")
 
+def get_sort(filepath: str) -> dict:
+    try:
+        sort_dict = {} 
+
+        with open(filepath, "r") as file:
+            for line in file:
+                split_line = line.split('=', 1)
+                
+                if split_line[0] == "sort":
+                    sort_args = split_line[1].strip().split(",")
+                    
+                    for arg in sort_args:
+                        path, condition = arg.split("[", 1)
+                        condition = condition.rstrip("]")
+                        sort_dict[condition] = path
+
+                    return sort_dict
+
+    except Exception as e:
+        print(f"get_sort error: {e}")
+
+def dynamic_sort(args: dict, client_path: str) -> str:
+    sort_dict = get_sort(CONF_PATH)
+    
+    print(sort_dict)
+
+def handle_preflags(flags: list, client_path: str):
+    try:
+        for flag in flags:
+            if flag == "-s":
+                dynamic_sort(get_sort(CONF_PATH), client_path)
+
+    except Exception as e:
+        raise Exception(f"pre-flag error: {e}")
+
 ##Iterate through a list of flags and operate on the client path depending on the flags.
-def handle_flags(flags: list, client_path: str):
+def handle_postflags(flags: list, client_path: str):
     try:
         for flag in flags:
             if flag == "-d":
@@ -77,21 +112,24 @@ def handle_flags(flags: list, client_path: str):
                 print(f"{client_path} removed succesfully") 
             
     except Exception as e:
-        raise Exception(f"flag error: {e}")
+        raise Exception(f"post-flag error: {e}")
 
 def main():
     try: 
         if len(argv) < 3:
-            raise ValueError("Usage: main.py <client path> <host path>")
+            raise ValueError("Usage: handoff.py <client path> <host path>")
         
         conf = get_conf(CONF_PATH)
         SSH_Conn = Conn(conf.get("user"), conf.get("hostname"), conf.get("port"))  
         client_path = argv[1]
         host_path = argv[2]
+        
+        handle_preflags(argv[3:], client_path)
+
         output = auto_scp(client_path, host_path, SSH_Conn, conf.get("flags"))
          
         print(output)
-        handle_flags(argv[3:], client_path)
+        handle_postflags(argv[3:], client_path)
     
     except Exception as e:
         print("error: ", repr(e))
