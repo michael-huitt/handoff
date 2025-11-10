@@ -3,8 +3,11 @@ from sys import argv
 from os import remove
 from os.path import isdir
 from shutil import rmtree
+from re import match
 
 CONF_PATH = "settings.conf"
+VIDEO_EXTENSION = (".mp4", ".mkv", ".avi", ".mov")
+IMAGE_EXTENSION = (".png", ".jpg", ".jpeg",".gif", ".svg")
 
 ##Fancy struct that sets the port to 22 if not specified, represents generic SSH connection info.
 class Conn:
@@ -84,11 +87,36 @@ def get_sort(filepath: str) -> dict:
     except Exception as e:
         print(f"get_sort error: {e}")
 
+def parse_sort(conditional: str):
+    try:
+        same = match(r"(\w+)\s*(==|=|!=|>=|<=|>|<)\s*(\w+)", conditional)
+        
+        if not same:
+            raise ValueError(f"Invalid conditional: {conditional}")
+
+        key, operator, value = same.groups()
+        
+        return key, operator, value
+
+    except Exception as e:
+        print(f"parse_sort error: {e}")
+
+def count_video(path: str) -> int:
+    pass
+
+def count_image(path: str) -> int:
+    pass
+
 def dynamic_sort(args: dict, client_path: str) -> str:
     try: 
-        sort_dict = get_sort(CONF_PATH)
-    
-        print(sort_dict)
+        for arg in args:
+            key, operator, value = parse_sort(arg)
+            
+            if key == "video":
+                count_video(client_path)
+
+            if key == "image":
+                count_image(client_path)
     
     except Exception as e:
         print(f"dynamic file sort error: {e}")
@@ -97,7 +125,7 @@ def handle_preflags(flags: list, client_path: str):
     try:
         for flag in flags:
             if flag == "-s":
-                dynamic_sort(get_sort(CONF_PATH), client_path)
+                return dynamic_sort(get_sort(CONF_PATH), client_path)
 
     except Exception as e:
         print(f"pre-flag error: {e}")
