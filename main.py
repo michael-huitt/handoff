@@ -1,5 +1,6 @@
 from subprocess import run
 from sys import argv
+from os import remove
 
 CONF_PATH = "settings.conf"
 
@@ -51,6 +52,16 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
     except Exception as e:
         print(f"auto_scp error: {e}")
 
+def handle_flags(flags: list, client_path: str) -> int:
+    try:
+        for flag in flags:
+            if flag == "-d":
+                remove(client_path)
+                print(f"{client_path} removed succesfully") 
+            
+    except Exception as e:
+        raise Exception(f"flag error: {e}")
+
 def main():
     try: 
         if len(argv) < 3:
@@ -60,10 +71,10 @@ def main():
         SSH_Conn = Conn(conf.get("user"), conf.get("hostname"), conf.get("port"))  
         client_path = argv[1]
         host_path = argv[2]
-
         output = auto_scp(client_path, host_path, SSH_Conn, conf.get("flags"))
-        
+         
         print(output)
+        handle_flags(argv[3:], client_path)
     
     except Exception as e:
         print("error: ", repr(e))
