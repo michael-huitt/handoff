@@ -85,9 +85,13 @@ def get_sort(filepath: str) -> dict:
         print(f"get_sort error: {e}")
 
 def dynamic_sort(args: dict, client_path: str) -> str:
-    sort_dict = get_sort(CONF_PATH)
+    try: 
+        sort_dict = get_sort(CONF_PATH)
     
-    print(sort_dict)
+        print(sort_dict)
+    
+    except Exception as e:
+        print(f"dynamic file sort error: {e}")
 
 def handle_preflags(flags: list, client_path: str):
     try:
@@ -96,7 +100,7 @@ def handle_preflags(flags: list, client_path: str):
                 dynamic_sort(get_sort(CONF_PATH), client_path)
 
     except Exception as e:
-        raise Exception(f"pre-flag error: {e}")
+        print(f"pre-flag error: {e}")
 
 ##Iterate through a list of flags and operate on the client path depending on the flags.
 def handle_postflags(flags: list, client_path: str):
@@ -112,7 +116,7 @@ def handle_postflags(flags: list, client_path: str):
                 print(f"{client_path} removed succesfully") 
             
     except Exception as e:
-        raise Exception(f"post-flag error: {e}")
+        print(f"post-flag error: {e}")
 
 def main():
     try: 
