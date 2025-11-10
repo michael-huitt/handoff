@@ -149,7 +149,7 @@ def handle_postflags(flags: list, client_path: str):
 def main():
     try: 
         if len(argv) < 3:
-            raise ValueError("Usage: handoff.py <client path> <host path>")
+            raise ValueError("Usage: handoff.py <client path> <host path> <flags>")
         
         conf = get_conf(CONF_PATH)
         SSH_Conn = Conn(conf.get("user"), conf.get("hostname"), conf.get("port"))  
