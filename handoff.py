@@ -1,6 +1,7 @@
 from subprocess import run
 from sys import argv
 from os import remove
+from os.path import isdir
 from shutil import rmtree
 
 CONF_PATH = "settings.conf"
@@ -60,7 +61,12 @@ def handle_flags(flags: list, client_path: str) -> int:
     try:
         for flag in flags:
             if flag == "-d":
-                remove(client_path)
+                if isdir(client_path):
+                    rmtree(client_path)
+
+                else: 
+                    remove(client_path)
+                
                 print(f"{client_path} removed succesfully") 
             
     except Exception as e:
