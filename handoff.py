@@ -68,7 +68,7 @@ def handle_flags(flags: list, client_path: str):
     try:
         for flag in flags:
             if flag == "-d":
-                if isdir(client_path) 
+                if isdir(client_path):
                     rmtree(client_path)
 
                 else: 
