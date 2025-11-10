@@ -1,6 +1,7 @@
 from subprocess import run
 from sys import argv
 from os import remove
+from shutil import rmtree
 
 CONF_PATH = "settings.conf"
 
@@ -46,8 +47,11 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
             raise Exception(f"scp exited with code ({Result.returncode}): {Result.stderr.strip()}")
 
         else:
-            return (f"Transfer succesful {client_path} -> {SSH_Conn.user}@{SSH_Conn.hostname}:{host_path}"
-                    f"\n{Result.stderr}")
+            if Result.stderr != '': 
+                return (f"Transfer succesful {client_path} -> {SSH_Conn.user}@{SSH_Conn.hostname}:{host_path}"
+                        f"\n{Result.stderr}")
+            else:
+                return (f"Transfer succesful {client_path} -> {SSH_Conn.user}@{SSH_Conn.hostname}:{host_path}")
 
     except Exception as e:
         print(f"auto_scp error: {e}")
