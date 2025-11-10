@@ -6,8 +6,10 @@ from shutil import rmtree
 from re import match
 
 CONF_PATH = "settings.conf"
-VIDEO_EXTENSION = (".mp4", ".mkv", ".avi", ".mov")
+
+VIDEO_EXTENSION = (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv")
 IMAGE_EXTENSION = (".png", ".jpg", ".jpeg",".gif", ".svg")
+PLAINTEXT_EXTENSION = (".txt", ".md")
 
 ##Fancy struct that sets the port to 22 if not specified, represents generic SSH connection info.
 class Conn:
@@ -101,22 +103,30 @@ def parse_sort(conditional: str):
     except Exception as e:
         print(f"parse_sort error: {e}")
 
-def count_video(path: str) -> int:
-    pass
-
-def count_image(path: str) -> int:
-    pass
+def count_extension(path: str, extension: tuple) -> int:
+    try: 
+        count = 0 
+        
+        if isdir(path):
+            for file in listdir(path):
+                if file.lower().endswith(extension):
+                    count += 1
+    
+        elif path.lower().endswith(extension):
+            count += 1
+    
+        return count
+    
+    except Exception as e:
+        print(f"count_extension error: {e}")
 
 def dynamic_sort(args: dict, client_path: str) -> str:
     try: 
         for arg in args:
             key, operator, value = parse_sort(arg)
             
-            if key == "video":
-                count_video(client_path)
-
-            if key == "image":
-                count_image(client_path)
+            print(key) 
+            print(count_extension(client_path, key))
     
     except Exception as e:
         print(f"dynamic file sort error: {e}")
