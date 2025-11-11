@@ -7,9 +7,9 @@ from re import match
 
 CONF_PATH = "settings.conf"
 
-VIDEO_EXTENSION = (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv")
-IMAGE_EXTENSION = (".png", ".jpg", ".jpeg",".gif", ".svg")
-PLAINTEXT_EXTENSION = (".txt", ".md")
+VIDEO     = (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv")
+IMAGE     = (".png", ".jpg", ".jpeg",".gif", ".svg")
+PLAINTEXT = (".txt", ".md")
 
 ##Fancy struct that sets the port to 22 if not specified, represents generic SSH connection info.
 class Conn:
@@ -59,6 +59,7 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
             raise Exception(f"scp exited with code ({Result.returncode}): {Result.stderr.strip()}")
 
         else:
+
             if Result.stderr != '': #returned on non-verbose scp success 
                 return (f"Transfer succesful {client_path} -> {SSH_Conn.user}@{SSH_Conn.hostname}:{host_path}"
                         f"\n{Result.stderr}")
@@ -68,6 +69,8 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
     except Exception as e:
         print(f"auto_scp error: {e}")
 
+##Get_sort() does a line by line pass through the given conf file looking for the 'sort' keyword
+##and creates and returns a dictionary of the arguments listed under the sort keyword
 def get_sort(filepath: str) -> dict:
     try:
         sort_dict = {} 
@@ -89,7 +92,9 @@ def get_sort(filepath: str) -> dict:
     except Exception as e:
         print(f"get_sort error: {e}")
 
-def parse_sort(conditional: str):
+##Parse a tuple of (key, operator, value) from a string representing the arguments intended to be processed by
+##dynamic_sort()
+def parse_sort(conditional: str) -> tuple:
     try:
         same = match(r"(\w+)\s*(==|=|!=|>=|<=|>|<)\s*(\w+)", conditional)
         
@@ -103,7 +108,7 @@ def parse_sort(conditional: str):
     except Exception as e:
         print(f"parse_sort error: {e}")
 
-def count_extension(path: str, extension: tuple) -> int:
+def count_extension(path: str, extension) -> int:
     try: 
         count = 0 
         
@@ -124,23 +129,33 @@ def dynamic_sort(args: dict, client_path: str) -> str:
     try: 
         for arg in args:
             key, operator, value = parse_sort(arg)
+            count = count_extension(client_path, eval(key))
             
-            print(key) 
-            print(count_extension(client_path, key))
+            if eval(f"{count} {operator} {value}"):
+                return args[arg]
     
     except Exception as e:
         print(f"dynamic file sort error: {e}")
 
+##Iterate through a list of flags and perform operations that should be performed PRIOR to the execution of auto_scp(),
+##such as dynamic file sorting.
 def handle_preflags(flags: list, client_path: str):
     try:
         for flag in flags:
             if flag == "-s":
-                return dynamic_sort(get_sort(CONF_PATH), client_path)
-
+                sort_output = dynamic_sort(get_sort(CONF_PATH), client_path).strip()
+                
+                print(f"File matched to: {sort_output}") 
+                return sort_output
+            
+            else:
+                return None
+    
     except Exception as e:
         print(f"pre-flag error: {e}")
 
-##Iterate through a list of flags and operate on the client path depending on the flags.
+##Iterate through a list of flags and operate on the client path depending on the flags (such as for cleanup using
+##delete).
 def handle_postflags(flags: list, client_path: str):
     try:
         for flag in flags:
@@ -166,7 +181,10 @@ def main():
         client_path = argv[1]
         host_path = argv[2]
         
-        handle_preflags(argv[3:], client_path)
+        preflag_output = handle_preflags(argv[3:], client_path)
+        
+        if preflag_output:
+            host_path = preflag_output
 
         output = auto_scp(client_path, host_path, SSH_Conn, conf.get("flags"))
          
@@ -178,3 +196,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
