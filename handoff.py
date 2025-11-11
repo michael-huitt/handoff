@@ -93,7 +93,7 @@ def get_sort(filepath: str) -> dict:
         print(f"get_sort error: {e}")
 
 ##Parse a tuple of (key, operator, value) from a string representing the arguments intended to be processed by
-##dynamic_sort()
+##dynamic_sort().
 def parse_sort(conditional: str) -> tuple:
     try:
         same = match(r"(\w+)\s*(==|=|!=|>=|<=|>|<)\s*(\w+)", conditional)
@@ -108,7 +108,9 @@ def parse_sort(conditional: str) -> tuple:
     except Exception as e:
         print(f"parse_sort error: {e}")
 
-def count_extension(path: str, extension) -> int:
+##Returns the number of files ending with the given tuple. It is expected that the tuple is a predefined global 
+##variable.
+def count_extension(path: str, extension: tuple) -> int:
     try: 
         count = 0 
         
@@ -125,7 +127,9 @@ def count_extension(path: str, extension) -> int:
     except Exception as e:
         print(f"count_extension error: {e}")
 
-def dynamic_sort(args: dict, client_path: str) -> str:
+##Given a dictionary representing sort arguments (returned by get_sort), parses the arguments and returns a string
+##representing the path if a given argument matches, otherwise return None
+def dynamic_sort(args: dict, client_path: str) -> str | None:
     try: 
         for arg in args:
             key, operator, value = parse_sort(arg)
@@ -143,7 +147,10 @@ def handle_preflags(flags: list, client_path: str):
     try:
         for flag in flags:
             if flag == "-s":
-                sort_output = dynamic_sort(get_sort(CONF_PATH), client_path).strip()
+                sort_output = dynamic_sort(get_sort(CONF_PATH), client_path)
+                
+                if sort_output:
+                    sort_output = sort_output.strip()
                 
                 print(f"File matched to: {sort_output}") 
                 return sort_output
