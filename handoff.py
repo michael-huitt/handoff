@@ -1,6 +1,6 @@
 from subprocess import run
 from sys import argv
-from os import remove
+from os import remove, listdir
 from os.path import isdir
 from shutil import rmtree
 from re import match
