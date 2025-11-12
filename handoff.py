@@ -1,13 +1,13 @@
 from subprocess import run
 from sys import argv
 from os import remove, listdir
-from os.path import isdir, join
+from os.path import isdir, join, dirname, abspath
 from shutil import rmtree
 from re import match
 
 from constants import *
 
-CONF_PATH = "settings.conf"
+CONF_PATH = join(dirname(abspath(__file__)), "settings.conf")
 
 ##Fancy struct that sets the port to 22 if not specified, represents generic SSH connection info.
 class Conn:
