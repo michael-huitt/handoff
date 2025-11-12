@@ -3,7 +3,7 @@
 The primary intent of this script is to automate media transfer from a client system to a host server. Included are
 flags tailored for dynamically piping files to a specific directory on the host server based on preconfigured user
 arguments. When a torrent finishes, do you want to sort your Movies and Shows into their respective libraries? Handoff
-can do that for you. 
+can help automate that for you. 
 ## How To Install
 To install, clone the repository, and set up handoff.py however you wish. It is invoked with python3
 ## Formatting
