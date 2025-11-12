@@ -1,7 +1,7 @@
 from subprocess import run
 from sys import argv
 from os import remove, listdir
-from os.path import isdir
+from os.path import isdir, join
 from shutil import rmtree
 from re import match
 
@@ -118,7 +118,10 @@ def count_extension(path: str, extension: tuple) -> int:
             for file in listdir(path):
                 if file.lower().endswith(extension):
                     count += 1
-    
+                
+                if isdir(join(path, file.lower())):
+                    count += count_extension(join(path, file), extension)
+        
         elif path.lower().endswith(extension):
             count += 1
     
@@ -189,7 +192,6 @@ def main():
         host_path = argv[2]
         
         preflag_output = handle_preflags(argv[3:], client_path)
-        
         if preflag_output:
             host_path = preflag_output
 
