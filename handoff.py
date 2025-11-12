@@ -5,11 +5,9 @@ from os.path import isdir, join
 from shutil import rmtree
 from re import match
 
-CONF_PATH = "settings.conf"
+from constants import *
 
-VIDEO     = (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv")
-IMAGE     = (".png", ".jpg", ".jpeg",".gif", ".svg")
-PLAINTEXT = (".txt", ".md")
+CONF_PATH = "settings.conf"
 
 ##Fancy struct that sets the port to 22 if not specified, represents generic SSH connection info.
 class Conn:

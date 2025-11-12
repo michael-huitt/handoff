@@ -1,0 +1,12 @@
+VIDEO        = (".mp4", ".mkv", ".avi", ".mov", ".wmv", ".webm", ".flv", ".mpeg", ".mpg", ".m4v", ".3gp", ".ts", ".vob")
+IMAGE        = (".png", ".jpg", ".jpeg", ".gif", ".svg", ".bmp", ".tiff", ".tif", ".webp", ".heic", ".ico")
+PLAINTEXT    = (".txt", ".md", ".csv", ".log", ".ini", ".cfg", ".json", ".yaml", ".yml", ".xml")
+AUDIO        = (".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a", ".wma", ".aiff", ".alac")
+ARCHIVE      = (".zip", ".rar", ".7z", ".tar", ".gz", ".bz2", ".xz", ".iso")
+DOCUMENT     = (".pdf", ".doc", ".docx", ".odt", ".rtf", ".tex")
+SPREADSHEET  = (".xls", ".xlsx", ".ods", ".csv")
+PRESENTATION = (".ppt", ".pptx", ".odp")
+CODE         = (".py", ".c", ".cpp", ".h", ".hpp", ".java", ".js", ".ts", ".html", ".css", ".sh", ".bat", ".ps1",
+                ".php", ".rb", ".go", ".rs", ".swift")
+EXECUTABLE   = (".exe", ".msi", ".bin", ".sh", ".bat", ".run", ".app", ".apk", ".deb", ".rpm")
+DATABASE     = (".db", ".sqlite", ".sql", ".mdb", ".accdb", ".jsonl")
