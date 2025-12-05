@@ -194,20 +194,47 @@ def handle_preflags(flags: list, client_path: str):
     except Exception as e:
         print(f"pre-flag error: {e}")
 
+##Determine whether a path is a directory or file and attempt to delete it, raising an OSError should any arise
+def postdelete(path: str):
+    if isdir(path): 
+        try: 
+            rmtree(path, ignore_errors = False)
+            print("file tree deleted succesfully!")
+
+        except OSError as e:
+            print(f"postdelete tree remove error: {e}")
+    
+    else:
+        try:
+            remove(path)
+            print("file deleted succesfully!")
+
+        except OSError as e:
+            print(f"postdelete file remove error: {e}")
+
 ##Iterate through a list of flags and operate on the client path depending on the flags (such as for cleanup using
 ##delete).
 def handle_postflags(flags: list, client_path: str):
     try:
+        assume_y = False 
+        
+        for flag in flags:
+            if flag == "-y":
+                assume_y = True
+
         for flag in flags:
             if flag == "-d":
-                if isdir(client_path):
-                    rmtree(client_path)
+                if assume_y:
+                    postdelete(client_path)
 
-                else: 
-                    remove(client_path)
-                
-                print(f"{client_path} removed succesfully") 
-            
+                else:
+                    print(f"delete file {client_path} ? (y/n):")
+                    
+                    prompt = input(">>")
+    
+                    if prompt.strip().lower() == "y":
+                        postdelete(client_path)
+
     except Exception as e:
         print(f"post-flag error: {e}")
 
