@@ -94,7 +94,7 @@ def get_sort(filepath: str) -> dict:
 ##dynamic_sort().
 def parse_sort(conditional: str) -> tuple:
     try:
-        same = match(r"(\w+)\s*(==|=|!=|>=|<=|>|<)\s*(\w+)", conditional)
+        same = match(r"(\w+)\s*(==|!=|>=|<=|>|<)\s*(\w+)", conditional)
         
         if not same:
             raise ValueError(f"Invalid conditional: {conditional}")
@@ -110,6 +110,9 @@ def parse_sort(conditional: str) -> tuple:
 ##variable.
 def count_extension(path: str, extension: tuple) -> int:
     try: 
+        if extension is None:
+            raise ValueError("extension tuple cannot be None")
+
         count = 0 
         
         if isdir(path):
@@ -128,15 +131,43 @@ def count_extension(path: str, extension: tuple) -> int:
     except Exception as e:
         print(f"count_extension error: {e}")
 
+##Evaluate variables safely and return a boolean or raise a ValueError if the operator isn't supported 
+def evaluate_expression(count: int, operator: str, value: int) -> bool:
+    try:
+        match operator:
+            case "==":
+                return (count == value)
+
+            case "!=":
+                return (count != value)
+
+            case ">=":
+                return (count >= value)
+
+            case "<=":
+                return (count <= value)
+
+            case ">":
+                return (count > value)
+
+            case "<":
+                return (count < value)
+            
+            case _:
+                raise ValueError("Operator not matched to case")
+    
+    except Exception as e:
+        print(f"evaluate_expression error: {e}")
+
 ##Given a dictionary representing sort arguments (returned by get_sort), parses the arguments and returns a string
 ##representing the path if a given argument matches, otherwise return None
 def dynamic_sort(args: dict, client_path: str) -> str | None:
     try: 
         for arg in args:
             key, operator, value = parse_sort(arg)
-            count = count_extension(client_path, eval(key))
+            count = count_extension(client_path, globals().get(key, None))
             
-            if eval(f"{count} {operator} {value}"):
+            if evaluate_expression(count, operator, int(value)):
                 return args[arg]
     
     except Exception as e:
@@ -154,6 +185,7 @@ def handle_preflags(flags: list, client_path: str):
                     sort_output = sort_output.strip()
                 
                 print(f"File matched to: {sort_output}") 
+                
                 return sort_output
             
             else:
@@ -190,6 +222,7 @@ def main():
         host_path = argv[2]
         
         preflag_output = handle_preflags(argv[3:], client_path)
+        
         if preflag_output:
             host_path = preflag_output
 
