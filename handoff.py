@@ -187,7 +187,7 @@ def handle_preflags(flags: list, client_path: str):
             if flag == "-q":
                 import sys 
 
-                sys.stdout = open("log.txt", "a") 
+                sys.stdout = open(join(dirname(abspath(__file__)), "log.txt") , "a") 
                 
                 print(f"\n[{datetime.now()}] - handoff began quietly logging an event...")
             
