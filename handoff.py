@@ -1,5 +1,5 @@
 from subprocess import run
-from sys import argv
+from sys import argv, exit
 from os import remove, listdir
 from os.path import isdir, join, dirname, abspath
 from shutil import rmtree
@@ -37,7 +37,7 @@ def get_conf(filepath: str) -> dict:
 
     except FileNotFoundError:
         print("The config file does not exist")
-
+        exit(1)
 
 ##Run the scp command given the client path, host path, a Conn object, and a list of scp flags. Returns a string that
 ##gives details on the operation, first a generic "success" message followed by anything scp might return.
@@ -66,6 +66,7 @@ def auto_scp(client_path: str, host_path: str, SSH_Conn: Conn, flags: list) -> s
 
     except Exception as e:
         print(f"auto_scp error: {e}")
+        exit(1) 
 
 ##Get_sort() does a line by line pass through the given conf file looking for the 'sort' keyword
 ##and creates and returns a dictionary of the arguments listed under the sort keyword
@@ -89,6 +90,7 @@ def get_sort(filepath: str) -> dict:
 
     except Exception as e:
         print(f"get_sort error: {e}")
+        exit(1)
 
 ##Parse a tuple of (key, operator, value) from a string representing the arguments intended to be processed by
 ##dynamic_sort().
@@ -105,6 +107,7 @@ def parse_sort(conditional: str) -> tuple:
 
     except Exception as e:
         print(f"parse_sort error: {e}")
+        exit(1)
 
 ##Returns the number of files ending with the given tuple. It is expected that the tuple is a predefined global 
 ##variable.
@@ -130,6 +133,7 @@ def count_extension(path: str, extension: tuple) -> int:
     
     except Exception as e:
         print(f"count_extension error: {e}")
+        exit(1)
 
 ##Evaluate variables safely and return a boolean or raise a ValueError if the operator isn't supported 
 def evaluate_expression(count: int, operator: str, value: int) -> bool:
@@ -193,6 +197,7 @@ def handle_preflags(flags: list, client_path: str):
     
     except Exception as e:
         print(f"pre-flag error: {e}")
+        exit(1)
 
 ##Determine whether a path is a directory or file and attempt to delete it, raising an OSError should any arise
 def postdelete(path: str):
@@ -237,6 +242,7 @@ def handle_postflags(flags: list, client_path: str):
 
     except Exception as e:
         print(f"post-flag error: {e}")
+        exit(1)
 
 def main():
     try: 
@@ -257,7 +263,8 @@ def main():
          
         print(output)
         handle_postflags(argv[3:], client_path)
-    
+        exit(0)
+
     except Exception as e:
         print("error: ", repr(e))
 
