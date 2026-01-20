@@ -1,10 +1,10 @@
 from subprocess import run
-from sys import argv, exit
+from sys import argv, exit, stdout
 from os import remove, listdir
 from os.path import isdir, join, dirname, abspath
 from shutil import rmtree
 from re import match
-
+from datetime import datetime
 from constants import *
 
 CONF_PATH = join(dirname(abspath(__file__)), "settings.conf")
@@ -181,7 +181,16 @@ def dynamic_sort(args: dict, client_path: str) -> str | None:
 ##such as dynamic file sorting.
 def handle_preflags(flags: list, client_path: str):
     try:
+        output = None 
+
         for flag in flags:
+            if flag == "-q":
+                import sys 
+
+                sys.stdout = open("log.txt", "w") 
+                
+                print(f"\n[{datetime.now()}] - handoff began quietly logging an event...")
+            
             if flag == "-s":
                 sort_output = dynamic_sort(get_sort(CONF_PATH), client_path)
                 
@@ -190,11 +199,14 @@ def handle_preflags(flags: list, client_path: str):
                 
                 print(f"File matched to: {sort_output}") 
                 
-                return sort_output
-            
-            else:
-                return None
-    
+                if flag == flags[-1]:
+                    return sort_output
+                
+                else:
+                    output = sort_output
+
+        return output
+
     except Exception as e:
         print(f"pre-flag error: {e}")
         exit(1)
@@ -212,7 +224,7 @@ def postdelete(path: str):
     else:
         try:
             remove(path)
-            print("file deleted succesfully!")
+            print("File deleted succesfully!")
 
         except OSError as e:
             print(f"postdelete file remove error: {e}")
