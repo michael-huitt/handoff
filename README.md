@@ -14,12 +14,16 @@ python3 handoff.py <client path> <host path> <flags>
 ### Currently Supported Flags
 ```
 -d [deletes the directory/file upon succesful transfer. Prompts the user for comfirmation]
--s [Dynamically routes the file(s) based on the "sort" field found in settings.conf. For example: if you have the
-    arguments "/host/path/Movies[VIDEO==1], /host/path/Shows[VIDEO>1]", the script will check if the number of files
-    with the VIDEO extension (found in constants.py) matches each argument, and if any match, then the file(s) will
-    be routed to that directory. NOTE: A destination path still needs to be passed to the script, as this is the
-    default path assuming no arguments are met.]
+-s [Dynamically routes the file(s) based on the "sort" field found in settings.conf. 
+    For example: if you have the arguments "/host/path/Movies[VIDEO==1], /host/path/Shows[VIDEO>1]", 
+    the script will check if the number of files with the VIDEO extension (found in constants.py) 
+    matches each argument, and if any match, then the file(s) will be routed to that directory. 
+    NOTE: A destination path still needs to be passed to the script, as this is the default 
+    path assuming no arguments are met.]
 -y [automatically assume yes to any prompts that may arise.]
+-q [quietly log stdout to a file called 'log.txt' found in the source directory. Note that this
+    means you will not get stdout output. Make sure to use '-y' if you use any flags that
+    require a prompt 
 ```
 ## Configuration
 ### Settings.conf
